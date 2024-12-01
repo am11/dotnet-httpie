@@ -3,9 +3,6 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 
 COPY --from=cross-build-env /crossrootfs /crossrootfs
 
-RUN ls /crossrootfs
-RUN ls /crossrootfs/arm64
-
 ARG TARGETARCH
 ARG BUILDARCH
 
@@ -15,7 +12,7 @@ ARG BUILDARCH
 # RUN apk update && apk add clang build-base zlib-dev
 # for debian/ubuntu
 # https://github.com/dotnet/runtimelab/issues/1785#issuecomment-993179119
-RUN apt-get update && apt-get install -y clang zlib1g-dev lld
+RUN apt-get update && apt-get install -y clang zlib1g-dev binutils-aarch64-linux-gnu
 
 WORKDIR /app
 
@@ -28,9 +25,9 @@ COPY ./.editorconfig ./
 
 WORKDIR /app/src/HTTPie/
 RUN if [ "${TARGETARCH}" = "${BUILDARCH}" ]; then \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -o /app/artifacts; \
+      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts; \
     else \
-      dotnet publish -f net9.0 -r linux-arm64 -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot=/crossrootfs/arm64 -o /app/artifacts; \
+      dotnet publish -f net9.0 -r linux-arm64 -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:SysRoot=/crossrootfs/arm64 -p:ObjCopyName=aarch64-linux-gnu-objcopy -o /app/artifacts; \
     fi
 
 RUN apt install -y file && file /app/artifacts/http
