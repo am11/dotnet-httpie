@@ -7,7 +7,7 @@ ARG TARGETARCH
 # RUN apk update && apk add clang build-base zlib-dev
 # for debian/ubuntu
 # https://github.com/dotnet/runtimelab/issues/1785#issuecomment-993179119
-RUN apt-get update && apt-get install -y clang zlib1g-dev binutils-aarch64-linux-gnu file
+RUN apt-get update && apt-get install -y clang zlib1g-dev file
 
 WORKDIR /app
 
