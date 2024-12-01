@@ -12,7 +12,7 @@ ARG BUILDARCH
 # RUN apk update && apk add clang build-base zlib-dev
 # for debian/ubuntu
 # https://github.com/dotnet/runtimelab/issues/1785#issuecomment-993179119
-RUN apt-get update && apt-get install -y clang zlib1g-dev lld file
+RUN apt-get update && apt-get install -y clang zlib1g-dev binutils-aarch64-linux-gnu file
 
 WORKDIR /app
 
@@ -25,11 +25,11 @@ COPY ./.editorconfig ./
 
 WORKDIR /app/src/HTTPie/
 RUN if [ "${TARGETARCH}" = "${BUILDARCH}" ]; then \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -o /app/artifacts; \
+      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts; \
     else \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot=/crossrootfs/arm64 -o /app/artifacts; \
+      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:SysRoot=/crossrootfs/arm64 -o /app/artifacts; \
     fi
-RUN dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts
+
 RUN file /app/artifacts/http
 
 FROM scratch
