@@ -18,6 +18,7 @@ COPY ./Directory.Build.targets ./
 COPY ./Directory.Packages.props ./
 COPY ./.editorconfig ./
 
+RUN uname -a
 WORKDIR /app/src/HTTPie/
 RUN dotnet publish -f net9.0 --use-current-runtime -a $TARGETARCH -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts
 
