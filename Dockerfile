@@ -21,11 +21,12 @@ COPY ./.editorconfig ./
 
 WORKDIR /app/src/HTTPie/
 RUN if [ "${TARGETARCH}" = "${BUILDARCH}" ]; then \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -o /app/artifacts \
+      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -o /app/artifacts; \
     else \
+      apt install -y debootstrap; \
       ROOTFS_DIR=/crossrootfs/arm64; \
       curl -sSL https://raw.githubusercontent.com/dotnet/arcade/main/eng/common/cross/build-rootfs.sh | bash /dev/stdin arm64 noble llvm18 lldb18; \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot="$ROOTFS_DIR" -o /app/artifacts \
+      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot="$ROOTFS_DIR" -o /app/artifacts; \
     fi
 RUN dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts
 RUN file /app/artifacts/http
