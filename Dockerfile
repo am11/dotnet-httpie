@@ -7,7 +7,7 @@ ARG TARGETARCH
 # RUN apk update && apk add clang build-base zlib-dev
 # for debian/ubuntu
 # https://github.com/dotnet/runtimelab/issues/1785#issuecomment-993179119
-RUN apt-get update && apt-get install -y clang zlib1g-dev binutils-aarch64-linux-gnu
+RUN apt-get update && apt-get install -y clang zlib1g-dev binutils-aarch64-linux-gnu file
 
 WORKDIR /app
 
@@ -20,7 +20,8 @@ COPY ./.editorconfig ./
 
 RUN uname -a
 WORKDIR /app/src/HTTPie/
-RUN dotnet publish -f net9.0 --use-current-runtime -a $TARGETARCH -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts
+RUN dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -o /app/artifacts
+RUN file /app/artifacts/http
 
 FROM scratch
 
