@@ -30,7 +30,7 @@ WORKDIR /app/src/HTTPie/
 RUN if [ "${TARGETARCH}" = "${BUILDARCH}" ]; then \
       dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -o /app/artifacts; \
     else \
-      dotnet publish -f net9.0 --use-current-runtime -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot=/crossrootfs/arm64 -o /app/artifacts; \
+      dotnet publish -f net9.0 -r linux-arm64 -p:AssemblyName=http -p:TargetFrameworks=net9.0 -p:LinkerFlavor=lld -p:SysRoot=/crossrootfs/arm64 -o /app/artifacts; \
     fi
 
 RUN apt install -y file && file /app/artifacts/http
